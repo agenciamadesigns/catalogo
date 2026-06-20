@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo Premium</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><span>Catalogo</span></div>
+  <button class="cart-btn" onclick="abrirCarrito()">🛒 <span id="cartCount">0</span></button>
+</header>
+
+<section class="hero">
+  <div>
+    <span class="tag">Catálogo digital premium</span>
+    <h1>Compra fácil desde WhatsApp</h1>
+    <p>Explora productos, agrega al pedido y envíalo directo al negocio.</p>
+    <a href="#catalogo" class="btn">Ver catálogo</a>
+  </div>
+</section>
+
+<section class="filtros" id="catalogo">
+  <input type="text" id="buscador" placeholder="Buscar producto...">
+
+  <div class="categorias">
+    <button onclick="filtrarCategoria('Todos')" class="activo">Todos</button>
+    <button onclick="filtrarCategoria('Muebles')">Muebles</button>
+    <button onclick="filtrarCategoria('Decoración')">Decoración</button>
+    <button onclick="filtrarCategoria('Accesorios')">Accesorios</button>
+  </div>
+</section>
+
+<section class="productos" id="productos"></section>
+
+<div class="overlay" id="overlay" onclick="cerrarCarrito()"></div>
+
+<aside class="carrito" id="carrito">
+  <div class="carrito-header">
+    <h2>Tu pedido</h2>
+    <button onclick="cerrarCarrito()">✕</button>
+  </div>
+
+  <div id="itemsCarrito"></div>
+
+  <div class="total">
+    <p>Total:</p>
+    <h3 id="totalCarrito">$0</h3>
+  </div>
+
+  <button class="whatsapp" onclick="enviarWhatsApp()">Enviar por WhatsApp</button>
+</aside>
+
+<script src="script.js"></script>
+</body>
+</html>

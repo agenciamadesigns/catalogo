@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del Producto</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">MA<span>Catalog</span></div>
+  <a href="index.html" class="volver">← Volver al catálogo</a>
+</header>
+
+<main class="detalle-producto" id="detalleProducto"></main>
+
+<script src="script.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const idProducto = Number(params.get("id"));
+
+  const producto = productos.find(p => p.id === idProducto);
+
+  const detalle = document.getElementById("detalleProducto");
+
+  if (!producto) {
+    detalle.innerHTML = `
+      <div class="producto-no-encontrado">
+        <h1>Producto no encontrado</h1>
+        <p>Regresa al catálogo para ver los productos disponibles.</p>
+        <a href="index.html">Volver al catálogo</a>
+      </div>
+    `;
+  } else {
+    detalle.innerHTML = `
+      <section class="producto-detalle-grid">
+
+        <div class="producto-galeria">
+          <img src="${producto.imagen}"
+     alt="${producto.nombre}"
+     class="imagen-principal"
+     onclick="abrirLightbox(this.src)">
+
+<div class="miniaturas">
+  <img src="${producto.imagen}" onclick="abrirLightbox(this.src)">
+  <img src="${producto.imagen}" onclick="abrirLightbox(this.src)">
+  <img src="${producto.imagen}" onclick="abrirLightbox(this.src)">
+</div>
+        </div>
+
+        <div class="producto-info">
+          <span class="categoria-detalle">${producto.categoria}</span>
+          <h1>${producto.nombre}</h1>
+
+          <div class="rating">★★★★★ <span>4.9</span></div>
+
+          <h2>$${producto.precio.toLocaleString("es-MX")}</h2>
+
+          <p class="descripcion-detalle">
+            ${producto.descripcion}
+          </p>
+
+          <div class="beneficios">
+            <p>✓ Producto premium</p>
+            <p>✓ Disponible para entrega</p>
+            <p>✓ Pedido directo por WhatsApp</p>
+            <p>✓ Atención personalizada</p>
+          </div>
+
+          <div class="especificaciones">
+            <h3>Especificaciones</h3>
+
+            <div>
+              <strong>Material:</strong>
+              <span>Alta calidad</span>
+            </div>
+
+            <div>
+              <strong>Color:</strong>
+              <span>Según disponibilidad</span>
+            </div>
+
+            <div>
+              <strong>Medidas:</strong>
+              <span>Consultar por WhatsApp</span>
+            </div>
+
+            <div>
+              <strong>Categoría:</strong>
+              <span>${producto.categoria}</span>
+            </div>
+          </div>
+
+          <div class="acciones-detalle">
+            <button onclick="agregarAlCarrito(${producto.id})">
+              Agregar al pedido
+            </button>
+
+            <button class="btn-whatsapp-detalle" onclick="comprarProductoWhatsApp(${producto.id})">
+              Comprar por WhatsApp
+            </button>
+          </div>
+        </div>
+
+      </section>
+    `;
+  }
+
+  function comprarProductoWhatsApp(id) {
+    const producto = productos.find(p => p.id === id);
+
+    const mensaje = `Hola, quiero información de este producto:%0A%0AProducto: ${producto.nombre}%0APrecio: $${producto.precio.toLocaleString("es-MX")}%0ACategoría: ${producto.categoria}%0A%0AQuedo pendiente.`;
+
+    const url = `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
+    window.open(url, "_blank");
+  }
+
+  function abrirLightbox(src){
+  document.getElementById("lightboxImg").src = src;
+  document.getElementById("lightbox").classList.add("activo");
+  document.body.style.overflow = "hidden";
+}
+
+function cerrarLightbox(){
+  document.getElementById("lightbox").classList.remove("activo");
+  document.body.style.overflow = "auto";
+}
+</script>
+
+
+<div class="lightbox" id="lightbox">
+  <span class="cerrar-lightbox" onclick="cerrarLightbox()">&times;</span>
+
+  <img id="lightboxImg" src="" alt="">
+
+  <div class="lightbox-fondo" onclick="cerrarLightbox()"></div>
+</div>
+
+</body>
+</html>
