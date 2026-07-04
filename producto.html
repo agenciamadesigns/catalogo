@@ -15,16 +15,32 @@
 
 <main class="detalle-producto" id="detalleProducto"></main>
 
-<script src="script.js"></script>
+<div class="lightbox" id="lightbox">
+  <span class="cerrar-lightbox" onclick="cerrarLightbox()">&times;</span>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-fondo" onclick="cerrarLightbox()"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const idProducto = Number(params.get("id"));
+const numeroWhatsApp = "526621668765";
 
-  const producto = productos.find(p => p.id === idProducto);
+const params = new URLSearchParams(window.location.search);
+const idProducto = Number(params.get("id"));
+const detalle = document.getElementById("detalleProducto");
 
-  const detalle = document.getElementById("detalleProducto");
+cargarDetalleProducto();
 
-  if (!producto) {
+async function cargarDetalleProducto() {
+  const { data: producto, error } = await supabaseClient
+    .from("productos")
+    .select("*")
+    .eq("id", idProducto)
+    .single();
+
+  if (error || !producto) {
     detalle.innerHTML = `
       <div class="producto-no-encontrado">
         <h1>Producto no encontrado</h1>
@@ -32,110 +48,114 @@
         <a href="index.html">Volver al catálogo</a>
       </div>
     `;
-  } else {
-    detalle.innerHTML = `
-      <section class="producto-detalle-grid">
+    return;
+  }
 
-        <div class="producto-galeria">
-          <img src="${producto.imagen}"
-     alt="${producto.nombre}"
-     class="imagen-principal"
-     onclick="abrirLightbox(this.src)">
+  const galeria = producto.imagenes && producto.imagenes.length > 0
+    ? producto.imagenes
+    : [producto.imagen_principal];
 
-<div class="miniaturas">
-  <img src="${producto.imagen}" onclick="abrirLightbox(this.src)">
-  <img src="${producto.imagen}" onclick="abrirLightbox(this.src)">
-  <img src="${producto.imagen}" onclick="abrirLightbox(this.src)">
-</div>
+    const beneficios = producto.beneficios && producto.beneficios.length > 0
+  ? producto.beneficios
+  : ["Producto premium", "Pedido directo por WhatsApp", "Atención personalizada"];
+
+  detalle.innerHTML = `
+    <section class="producto-detalle-grid">
+      <div class="producto-galeria">
+        <img src="${producto.imagen_principal}"
+             alt="${producto.nombre}"
+             class="imagen-principal"
+             onclick="abrirLightbox(this.src)">
+
+        <div class="miniaturas">
+          ${galeria.map(img => `
+            <img src="${img}" onclick="cambiarImagenPrincipal('${img}')">
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="producto-info">
+        <span class="categoria-detalle">${producto.categoria || ""}</span>
+        <h1>${producto.nombre}</h1>
+
+        <div class="rating">★★★★★ <span>4.9</span></div>
+
+        <h2>$${Number(producto.precio).toLocaleString("es-MX")}</h2>
+
+        <p class="descripcion-detalle">
+          ${producto.descripcion_larga || producto.descripcion_corta || ""}
+        </p>
+
+        <div class="beneficios">
+          ${beneficios.map(b => `<p>✓ ${b}</p>`).join("")}
         </div>
 
-        <div class="producto-info">
-          <span class="categoria-detalle">${producto.categoria}</span>
-          <h1>${producto.nombre}</h1>
+        <div class="especificaciones">
+          <h3>Especificaciones</h3>
 
-          <div class="rating">★★★★★ <span>4.9</span></div>
-
-          <h2>$${producto.precio.toLocaleString("es-MX")}</h2>
-
-          <p class="descripcion-detalle">
-            ${producto.descripcion}
-          </p>
-
-          <div class="beneficios">
-            <p>✓ Producto premium</p>
-            <p>✓ Disponible para entrega</p>
-            <p>✓ Pedido directo por WhatsApp</p>
-            <p>✓ Atención personalizada</p>
+          <div>
+            <strong>Material:</strong>
+            <span>${producto.material || "Consultar"}</span>
           </div>
 
-          <div class="especificaciones">
-            <h3>Especificaciones</h3>
-
-            <div>
-              <strong>Material:</strong>
-              <span>Alta calidad</span>
-            </div>
-
-            <div>
-              <strong>Color:</strong>
-              <span>Según disponibilidad</span>
-            </div>
-
-            <div>
-              <strong>Medidas:</strong>
-              <span>Consultar por WhatsApp</span>
-            </div>
-
-            <div>
-              <strong>Categoría:</strong>
-              <span>${producto.categoria}</span>
-            </div>
+          <div>
+            <strong>Color:</strong>
+            <span>${producto.color || "Consultar"}</span>
           </div>
 
-          <div class="acciones-detalle">
-            <button onclick="agregarAlCarrito(${producto.id})">
-              Agregar al pedido
-            </button>
+          <div>
+            <strong>Medidas:</strong>
+            <span>${producto.medidas || "Consultar"}</span>
+          </div>
 
-            <button class="btn-whatsapp-detalle" onclick="comprarProductoWhatsApp(${producto.id})">
-              Comprar por WhatsApp
-            </button>
+          <div>
+            <strong>Categoría:</strong>
+            <span>${producto.categoria || "General"}</span>
           </div>
         </div>
 
-      </section>
-    `;
-  }
+        <div class="acciones-detalle">
+          <button onclick="comprarProductoWhatsApp(${producto.id})">
+            Pedir por WhatsApp
+          </button>
 
-  function comprarProductoWhatsApp(id) {
-    const producto = productos.find(p => p.id === id);
+          <button class="btn-whatsapp-detalle" onclick="comprarProductoWhatsApp(${producto.id})">
+            Comprar ahora
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
 
-    const mensaje = `Hola, quiero información de este producto:%0A%0AProducto: ${producto.nombre}%0APrecio: $${producto.precio.toLocaleString("es-MX")}%0ACategoría: ${producto.categoria}%0A%0AQuedo pendiente.`;
+function cambiarImagenPrincipal(src) {
+  document.querySelector(".imagen-principal").src = src;
+}
 
-    const url = `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
-    window.open(url, "_blank");
-  }
-
-  function abrirLightbox(src){
+function abrirLightbox(src) {
   document.getElementById("lightboxImg").src = src;
   document.getElementById("lightbox").classList.add("activo");
   document.body.style.overflow = "hidden";
 }
 
-function cerrarLightbox(){
+function cerrarLightbox() {
   document.getElementById("lightbox").classList.remove("activo");
   document.body.style.overflow = "auto";
 }
+
+async function comprarProductoWhatsApp(id) {
+  const { data: producto } = await supabaseClient
+    .from("productos")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  const mensaje = `Hola, quiero información de este producto:%0A%0AProducto: ${producto.nombre}%0APrecio: $${Number(producto.precio).toLocaleString("es-MX")}%0ACategoría: ${producto.categoria || "General"}%0A%0AQuedo pendiente.`;
+
+  const url = `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
+  window.open(url, "_blank");
+}
 </script>
-
-
-<div class="lightbox" id="lightbox">
-  <span class="cerrar-lightbox" onclick="cerrarLightbox()">&times;</span>
-
-  <img id="lightboxImg" src="" alt="">
-
-  <div class="lightbox-fondo" onclick="cerrarLightbox()"></div>
-</div>
 
 </body>
 </html>

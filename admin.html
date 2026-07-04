@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Catálogo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="login-admin" id="loginAdmin">
+  <div class="login-card">
+    <h1>Panel Catálogo</h1>
+    <p>Inicia sesión para administrar productos.</p>
+
+    <input type="email" id="email" placeholder="Correo">
+    <input type="password" id="password" placeholder="Contraseña">
+
+    <button onclick="login()">Entrar</button>
+  </div>
+</section>
+
+<section class="panel-admin oculto" id="panelAdmin">
+
+  <header class="admin-header">
+    <div>
+      <h1>Productos</h1>
+      <p>Agrega, edita u oculta productos del catálogo.</p>
+    </div>
+
+    <button onclick="logout()">Cerrar sesión</button>
+  </header>
+
+  <main class="admin-grid">
+
+    <form class="form-producto" id="formProducto">
+      <h2 id="tituloForm">Nuevo producto</h2>
+
+      <input type="hidden" id="productoId">
+
+      <label>Nombre del producto</label>
+      <input type="text" id="nombre" required>
+
+      <label>Categoría</label>
+      <input type="text" id="categoria" placeholder="Muebles, Ropa, Accesorios..." required>
+
+      <label>Precio</label>
+      <input type="number" id="precio" required>
+
+      <label>Descripción corta</label>
+      <textarea id="descripcion_corta" required></textarea>
+
+      <label>Descripción larga</label>
+      <textarea id="descripcion_larga"></textarea>
+
+      <label>Material</label>
+      <input type="text" id="material">
+
+      <label>Color</label>
+      <input type="text" id="color">
+
+      <label>Medidas</label>
+      <input type="text" id="medidas">
+
+      <label>Disponibilidad</label>
+      <input type="text" id="disponibilidad" placeholder="Disponible, Bajo pedido, Agotado...">
+
+      <label>Beneficios del producto</label>
+        <textarea id="beneficios" placeholder="Escribe un beneficio por línea. Ejemplo:
+        Producto premium
+        Entrega disponible
+        Pedido directo por WhatsApp
+        Atención personalizada"></textarea>
+
+      <label>Imagen principal</label>
+      <input type="file" id="imagenPrincipal" accept="image/*">
+
+      <label>Galería de imágenes</label>
+      <input type="file" id="imagenesGaleria" accept="image/*" multiple>
+
+      <label class="check">
+        <input type="checkbox" id="activo" checked>
+        Producto activo
+      </label>
+
+      <button type="submit" id="btnGuardar">Guardar producto</button>
+      <button type="button" class="btn-cancelar oculto" onclick="cancelarEdicion()">Cancelar edición</button>
+    </form>
+
+<div class="admin-derecha">
+
+  <section class="carga-masiva">
+    <h2>Carga masiva por Excel</h2>
+    <p>Sube un archivo .xlsx con productos usando URLs de imágenes.</p>
+
+    <input type="file" id="excelProductos" accept=".xlsx,.xls">
+
+    <button type="button" onclick="cargarExcelProductos()">
+      Cargar productos desde Excel
+    </button>
+  </section>
+
+  <section class="lista-admin">
+    <h2>Productos registrados</h2>
+    <input 
+        type="text" 
+        id="buscadorAdmin" 
+        class="buscador-admin" 
+        placeholder="Buscar producto por nombre, categoría o precio..."
+    >   
+    <div id="listaProductosAdmin"></div>
+  </section>
+
+</div>
+
+  </main>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
